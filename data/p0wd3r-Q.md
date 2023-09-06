@@ -33,3 +33,5 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/DelegateT
             revert Errors.InsufficientAllowanceOrInvalidToken();
         }
 ```
+
+I actually think that this check for ERC20 can be eliminated, because if the allowance is insufficient, it will also revert during the transfer. This check is somewhat redundant and wastes gas.
