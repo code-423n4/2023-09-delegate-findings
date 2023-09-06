@@ -1,6 +1,6 @@
 # Repeating the execution of the same delegate should revert instead of triggering the event repeatedly.
 
-In the `delegate*` function of `DelegateRegistry`, when `enable` is true and `loadedFrom != Storage.DELEGATION_EMPTY != Storage.DELEGATION_REVOKED`, which means that the location already has a delegation, the `DelegateAll` event will be triggered again, causing inconvenience to the listeners.
+In the `delegate*` function of `DelegateRegistry`, when `enable` is true and `loadedFrom != Storage.DELEGATION_EMPTY != Storage.DELEGATION_REVOKED`, which means that the location already has a delegation, the `DelegateAll` event will be triggered again, causing inconvenience to the listeners and waste user's gas.
 
 https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L44-L60
 ```solidity
