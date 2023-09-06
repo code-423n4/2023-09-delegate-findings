@@ -22,3 +22,14 @@ https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b
         emit DelegateAll(msg.sender, to, rights, enable);
     }
 ```
+
+# In `checkAndPullByType`, there is no authorization check for ERC721 and 1155 tokens like there is for ERC20.
+
+ERC20 checks the allowance before transferring, while ERC721 and 1155 do not check.
+
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/DelegateTokenTransferHelpers.sol#L52-L54
+```solidity
+        if (IERC20(underlyingContract).allowance(msg.sender, address(this)) < underlyingAmount) {
+            revert Errors.InsufficientAllowanceOrInvalidToken();
+        }
+```
