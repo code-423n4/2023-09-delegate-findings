@@ -38,3 +38,20 @@ replace 160 by a constant state variable:
 uint8 private constant CONTEXT_LENGTH = 160;
 if (context.length != CONTEXT_LENGTH) revert Errors.InvalidContextLength();
 ```
+
+#Avoid importing alias as alias
+
+There is no need for import alias if the import name is same as the alias
+
+Please consider removing the alias in the following import as the alias name is the same as the import name:
+<https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L4>
+
+instead of:
+```
+// @audit IDelegateRegistry is same as IDelegateRegistry
+import {IDelegateRegistry as IDelegateRegistry} from "./IDelegateRegistry.sol";
+```
+do this:
+```
+import {IDelegateRegistry} from "./IDelegateRegistry.sol";
+```
