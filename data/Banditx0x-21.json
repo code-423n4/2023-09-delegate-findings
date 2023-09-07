@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Banditx0x",
+  "risk": "3",
+  "title": "burnPrincipal does not revert when BURN_NOT_AUTHORIZED",
+  "issueId": 21,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/21"
+}
