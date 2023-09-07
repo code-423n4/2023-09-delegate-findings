@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "RHaO-sec",
+  "risk": "2",
+  "title": "Use safeMint instead of mint for ERC721",
+  "issueId": 13,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/13"
+}
