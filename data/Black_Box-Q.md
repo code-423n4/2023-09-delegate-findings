@@ -1,3 +1,19 @@
+# Low Risks
+
+## There is no proper validation in setApprovalForAll() in DelegateToken.sol
+
+It would be better if ````operator != msg.sender````. As it doesn't make sense to approve ourselves.
+
+```
+    function setApprovalForAll(address operator, bool approved) external {
+ +      require(msg.sender != operator,"Invalid approval");
+        accountOperator[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+```
+references
+[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.3/contracts/token/ERC721/ERC721.sol#L376-L380](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.3/contracts/token/ERC721/ERC721.sol#L376-L380)
+
 # Issues in comments
 
 ## Arguments order make the comment false
@@ -14,7 +30,7 @@ should be replaced by
 * @dev gives the same location hash as location(allHash(from, rights, to)) would
 ````
 
-### Line #140
+#### Line #140
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L140
 ````
 * @dev gives the same location hash as location(contractHash(rights, from, to, contract_)) would
@@ -24,7 +40,7 @@ should be replaced by
 * @dev gives the same location hash as location(contractHash(from, rights, to, contract_)) would
 ````
 
-### Line #192
+#### Line #192
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L192
 ````
 * @dev gives the same location hash as location(erc721Hash(rights, from, to, contract_, tokenId)) would
@@ -34,7 +50,7 @@ should be replaced by
 * @dev gives the same location hash as location(erc721Hash(from, rights, to, contract_, tokenId)) would
 ````
 
-### Line #242
+#### Line #242
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L242
 ````
 * @dev gives the same location hash as location(erc20Hash(rights, from, to, contract_)) would
@@ -70,7 +86,7 @@ should be replaced by
 * @dev returned hash should be equivalent to keccak256(abi.encodePacked(rights, from, to, contract_)) followed by a shift left by 1 byte and writing the CONTRACT_TYPE byte to the cleaned last byte
 ````
 
-### Line #167
+#### Line #167
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L167
 ````
 * @dev returned hash should be equivalent to keccak256(abi.encodePacked(rights, from, to, contract_, tokenId)) with the last byte overwritten with ERC721_TYPE
@@ -80,7 +96,7 @@ should be replaced by
 * @dev returned hash should be equivalent to keccak256(abi.encodePacked(rights, from, to, contract_, tokenId)) followed by a shift left by 1 byte and writing the ERC721_TYPE to the cleaned last byte
 ````
 
-### Line 219
+#### Line 219
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L219
 ````
 * @dev returned hash should be equivalent to keccak256(abi.encodePacked(rights, from, to, contract_)) with the last byte overwritten with ERC20_TYPE
@@ -90,7 +106,7 @@ should be replaced by
 * @dev returned hash should be equivalent to keccak256(abi.encodePacked(rights, from, to, contract_)) followed by a shift left by 1 byte and writing the ERC20_TYPE to the cleaned last byte
 ````
 
-### Line 269
+#### Line 269
 
 This comment line is false: https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/libraries/RegistryHashes.sol#L269
 ````
