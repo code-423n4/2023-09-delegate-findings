@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xanmol",
+  "risk": "3",
+  "title": "Use of solidity v0.8.21 may cause a failure in system",
+  "issueId": 12,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/12"
+}
