@@ -23,3 +23,18 @@ Some example of well written comments include:
 https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/DelegateTokenRegistryHelpers.sol#L9-L138
 
 
+## Contract should use constant variable instead of magic numbers.
+
+>Inside ```CreateOfferer.generateOrder``` function dev use magic number
+>
+<https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/CreateOfferer.sol#L58>
+
+instead of doing this:
+```        
+if (context.length != 160) revert Errors.InvalidContextLength();
+```
+replace 160 by a constant state variable:
+```
+uint8 private constant CONTEXT_LENGTH = 160;
+if (context.length != CONTEXT_LENGTH) revert Errors.InvalidContextLength();
+```
