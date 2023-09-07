@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "orion",
+  "risk": "3",
+  "title": "ETH burning function have no access control",
+  "issueId": 27,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/27"
+}
