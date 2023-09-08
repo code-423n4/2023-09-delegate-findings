@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "niloy",
+  "risk": "3",
+  "title": "Arbitrary Storage Corruption in _writeDelegation() via Out of Bounds Position",
+  "issueId": 56,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/56"
+}
