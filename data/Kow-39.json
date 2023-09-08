@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Kow",
+  "risk": "2",
+  "title": "`flashloan` always reverts for ERC1155 delegate flash loans",
+  "issueId": 39,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/39"
+}
