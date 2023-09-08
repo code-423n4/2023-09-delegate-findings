@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xWaitress",
+  "risk": "2",
+  "title": "No balance check after flashloan, if a token enables transfer-on-fee/royalty than the entire collateral balance could be rinsed by repeated flashloan",
+  "issueId": 65,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/65"
+}
