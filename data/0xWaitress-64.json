@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xWaitress",
+  "risk": "2",
+  "title": "Underlying token can be borrowed through Flashloan which can be used to claim airdrop any way, defeating the purpose of using delegate token",
+  "issueId": 64,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/64"
+}
