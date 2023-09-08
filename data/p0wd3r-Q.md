@@ -35,3 +35,21 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/DelegateT
 ```
 
 I actually think that this check for ERC20 can be eliminated, because if the allowance is insufficient, it will also revert during the transfer. This check is somewhat redundant and wastes gas.
+
+# App should return an order with penalties when its `previewOrder` function is called with unacceptable `minimumReceived` and `maximumSpent` arrays
+
+According to Seaport's documentation, for `previewOrder`, if the parameters do not meet the requirements, it should return an order with penalties rather than directly reverting.
+
+https://github.com/ProjectOpenSea/seaport/blob/main/docs/SeaportDocumentation.md#arguments-and-basic-functionality
+> An optimal Seaport app should return an order with penalties when its `previewOrder` function is called with unacceptable `minimumReceived` and `maximumSpent` arrays, so that the caller can learn what the Seaport app expects. 
+
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/CreateOffererLib.sol#L351-L357
+```solidity
+        if (!(minimumReceived.length == 1 && maximumSpent.length == 1)) revert CreateOffererErrors.NoBatchWrapping();
+        if (minimumReceived[0].itemType != ItemType.ERC721 || minimumReceived[0].token != address(this) || minimumReceived[0].amount != 1) {
+            revert CreateOffererErrors.MinimumReceivedInvalid(minimumReceived[0]);
+        }
+        if (maximumSpent[0].itemType != ItemType.ERC721 && maximumSpent[0].itemType != ItemType.ERC20 && maximumSpent[0].itemType != ItemType.ERC1155) {
+            revert CreateOffererErrors.MaximumSpentInvalid(maximumSpent[0]);
+        }
+```
