@@ -1,6 +1,7 @@
+ tokenURI not implemented as per standard 
 
 
-
+Retutn values of transfer and transferFrom functions should be checked
 
 
 open TODO 
