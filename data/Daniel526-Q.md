@@ -1,4 +1,5 @@
 1.  Immutable Variables
+[Link](https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/PrincipalToken.sol#L12-L13)
 In the contract provided, two variables, `delegateToken` and `marketMetadata`, are declared as immutable. These variables are used to store the addresses of external contracts during contract deployment. While immutable variables have advantages in terms of preventing unintended modifications, they introduce rigidity into the contract, as their values cannot be updated after deployment.
 ```solidity
 address public immutable delegateToken;
@@ -25,3 +26,17 @@ function setMarketMetadataAddress(address newAddress) external onlyOwner {
 }
 ```
 In this mitigation approach, the contract owner can call the `setDelegateTokenAddress` and `setMarketMetadataAddress` functions to update the addresses of the external contracts when needed, providing more flexibility and adaptability to changes in the ecosystem.
+2. Non-compliance with ERC1155 Batch Transfer Standard
+[Link](https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L78-L80)
+In the provided smart contract, the `onERC1155BatchReceived` function is expected to handle batch transfers of ERC1155 tokens. However, it deviates from the ERC1155 standard by reverting with an error message instead of processing the transfers. Here's the code snippet of the affected function:
+```solidity
+/// @inheritdoc IERC1155Receiver
+function onERC1155BatchReceived(address operator, address, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external pure returns (bytes4) {
+    revert Errors.BatchERC1155TransferUnsupported();
+}
+```
+The `revert` statement with the error message `Errors.BatchERC1155TransferUnsupported()` is triggered for all batch ERC1155 transfers, indicating that the contract does not support batch transfers as per the ERC1155 standard. This behavior can hinder the contract's ability to interoperate seamlessly with other ERC1155-compliant contracts that rely on batch transfers.
+Impact:
+The impact of this non-compliance with the ERC1155 standard is reduced interoperability and potential inconvenience for users. When interacting with other smart contracts or platforms that rely on batch ERC1155 transfers, users may experience unexpected errors or be unable to use the contract as intended.
+Mitigation:
+To address this issue and ensure compliance with the ERC1155 standard, the `onERC1155BatchReceived` function should be modified to handle batch transfers appropriately. The adjusted function should iterate through the `ids` and `values` arrays, processing each individual transfer within the batch according to the contract's use case. After processing the batch transfers, the function should return the `this.onERC1155BatchReceived.selector` value to indicate successful batch transfer handling. This modification will enhance interoperability and prevent errors when interacting with other ERC1155-compliant contracts.
