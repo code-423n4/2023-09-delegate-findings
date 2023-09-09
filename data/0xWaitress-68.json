@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xWaitress",
+  "risk": "3",
+  "title": "Delegate token can be used as an underlying, this would allow a flashloan of the delegate of delegate contract to enable a withdraw attack due to clash of the delegateId",
+  "issueId": 68,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/68"
+}
