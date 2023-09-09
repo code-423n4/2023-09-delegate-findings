@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Kow",
+  "risk": "2",
+  "title": "Accounting is incorrect for delegations of fee-on-transfer tokens potentially locking escrowed funds",
+  "issueId": 69,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/69"
+}
