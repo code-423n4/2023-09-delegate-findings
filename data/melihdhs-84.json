@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "melihdhs",
+  "risk": "2",
+  "title": "Invalid check in `DelegateTokenTransferHelpers.pullERC1155AfterCheck` function will always cause the function to revert.",
+  "issueId": 84,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/84"
+}
