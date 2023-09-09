@@ -40,3 +40,15 @@ Impact:
 The impact of this non-compliance with the ERC1155 standard is reduced interoperability and potential inconvenience for users. When interacting with other smart contracts or platforms that rely on batch ERC1155 transfers, users may experience unexpected errors or be unable to use the contract as intended.
 Mitigation:
 To address this issue and ensure compliance with the ERC1155 standard, the `onERC1155BatchReceived` function should be modified to handle batch transfers appropriately. The adjusted function should iterate through the `ids` and `values` arrays, processing each individual transfer within the batch according to the contract's use case. After processing the batch transfers, the function should return the `this.onERC1155BatchReceived.selector` value to indicate successful batch transfer handling. This modification will enhance interoperability and prevent errors when interacting with other ERC1155-compliant contracts.
+3. Inconsistent 'from' Address in Flash Loan Function
+[Link](https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L393)
+In the provided smart contract, the `flashloan` function is intended to facilitate flash loans by transferring tokens to the borrower for temporary use and then returning them. However, there is an inconsistency in the code snippet where tokens are transferred:
+```solidity
+IERC721(info.tokenContract).transferFrom(address(this), info.receiver, info.tokenId);
+```
+In this code snippet, the 'from' address (`address(this)`) is set to the contract's address (`DelegateToken`). This is not consistent with the standard behavior of flash loans, where tokens are typically borrowed from and returned to the user's address (`msg.sender`).
+Mitigation:
+To resolve this issue and ensure that the `flashloan` function behaves consistently with the typical behavior of flash loans, you should replace `address(this)` with `msg.sender` as the 'from' address when transferring tokens:
+```solidity
+IERC721(info.tokenContract).transferFrom(msg.sender, info.receiver, info.tokenId);
+```
