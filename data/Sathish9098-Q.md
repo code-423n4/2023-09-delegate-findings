@@ -1,88 +1,83 @@
-# GAS OPTIMIZATIONS
-
-Structs can be packed into fewer storage slots
-
-Each slot saved can avoid an extra Gsset (20000 gas) for the first setting of the struct.
-
-Subsequent reads as well as writes have smaller gas savings.
-
-### ``expiry`` can be uint96 instead of ``uint256`` :  Saves ``2000 GAS`` , ``1 SLOT``
-
-https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/DelegateTokenLib.sol#L20-L29
-
-A ``uint96`` can store values from ``0 to 2^96 - 1``, which is a very large range. However, it's important to note that Ethereum's ``block.timestamp`` is a ``Unix timestamp``, which represents time in seconds.
-A ``uint96`` would overflow after approximately ``2,508,149,904,626,209 years`` when storing time in seconds.  This is an extremely long time frame, and it's highly unlikely that Ethereum or any blockchain system will remain unchanged for such an extended period.
 
 
-```diff
-FILE: 2023-09-delegate/src/libraries/DelegateTokenLib.sol
-
-20: struct DelegateInfo {
-21:        address principalHolder;
-22:        IDelegateRegistry.DelegationType tokenType;
-23:        address delegateHolder;
-24:        uint256 amount;
-25:        address tokenContract;
-+ 28:        uint96 expiry;
-26:        uint256 tokenId;
-27:        bytes32 rights;
-- 28:        uint256 expiry;
-29:    }
-
-```
-
-### ``signerSalt``, ``expiryLength`` can be ``uint128`` instead of ``uint256`` : Saves ``4000 GAS`` , ``2 SLOT``
-
-https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/CreateOffererLib.sol#L89-L105
-
-In many blockchain protocols, the usage of ``salt`` often involves values within the range of ``uint32``, as they provide a sufficient numeric space for generating unique salts. Therefore, adopting a uint32 data type for the signerSalt field is a reasonable choice, as it aligns with common practices and conserves storage resources.
-
-For the ``expiryLength`` field, which is intended to store the ``duration`` or ``length`` of an ``expiration period``, using ``uint128`` is more than adequate. This choice allows for a vast range of possible expiration lengths, accommodating a wide spectrum of use cases without incurring unnecessary storage overhead
-
-```diff
-FILE: 2023-09-delegate/src/libraries/CreateOffererLib.sol
-
-89: struct Context {
-90:        bytes32 rights;
-+ 91:        uint128 signerSalt;
-+ 92:        uint128 expiryLength;
-- 91:        uint256 signerSalt;
-- 92:        uint256 expiryLength;
-93:        CreateOffererEnums.ExpiryType expiryType;
-94:        CreateOffererEnums.TargetToken targetToken;
-95:    }
 
 
-98: struct Order {
-99:        bytes32 rights;
-- 100:        uint256 expiryLength;
-- 101:        uint256 signerSalt;
-+ 100:        uint128 expiryLength;
-+ 101:        uint128 signerSalt;
-102:        address tokenContract;
-103:        CreateOffererEnums.ExpiryType expiryType;
-104:        CreateOffererEnums.TargetToken targetToken;
-105:    }
 
-```
+open TODO 
 
-## [G-2] Remove or replace unused state variables
+Dividing an integer by another integer will often result in loss of precision. When the result is multiplied by another number, the loss of precision is magnified, often to material magnitudes. (X / Z) * Y should be re-written as (X * Y) / Z
 
-Saves a storage slot. If the variable is assigned a non-zero value, saves ``Gsset (20000 gas)``. If it's assigned a zero value, saves ``Gsreset (2900 gas)``. If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
+There are 8 instances of this issue:
 
-```solidity
-FILE: delegate-registry/src/DelegateRegistry.sol
+File: contracts/markets/Market.sol
 
-18: mapping(bytes32 delegationHash => bytes32[5] delegationStorage) internal delegations;
+290          uint256 denominator = ((10 ** ratesPrecision) -
+291              (collateralizationRate *
+292                  ((10 ** ratesPrecision) + liquidationMultiplier)) /
+293:             (10 ** ratesPrecision)) * (10 ** (18 - ratesPrecision));
 
-```
-https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L18
+392                  (userCollateralShare[user] *
+393                      (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
+394:                     collateralizationRate),
 
-##
+392                  (userCollateralShare[user] *
+393:                     (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
 
-[G-] Multiple accesses of a mapping/array should use a local variable cache
+417                  collateralShare *
+418                      (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
+419:                     collateralizationRate,
 
-The instances below point to the second+ access of a value inside a mapping/array, within a function. Caching a mapping’s value in a local storage or calldata variable when the value is accessed [multiple times](https://gist.github.com/IllIllI000/ec23a57daa30a8f8ca8b9681c8ccefb0), saves ~42 gas per access due to not having to recalculate the key’s keccak256 hash (Gkeccak256 - 30 gas) and that calculation’s associated stack operations. Caching an array’s struct avoids recalculating the array offsets into memory/calldata
+417                  collateralShare *
+418:                     (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
+
+External calls in an un-bounded for-loop may result in a DOS
+
+Missing checks for address(0x0) when assigning values to address state variables
+
+Draft imports may break in new minor versions
+
+5:    import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+
+Consider implementing two-step procedure for updating protocol addresses
+
+Array lengths not checked
+If the length of the arrays are not required to be of the same length, user operations may not be fully executed due to a mismatch in the number of items iterated over, versus the number of items provided in the second array
+
+Signature use at deadlines should be allowed
+According to EIP-2612, signatures used on exactly the deadline timestamp are supposed to be allowed. While the signature may or may not be used for the exact EIP-2612 use case (transfer approvals), for consistency's sake, all deadlines should follow this semantic. If the timestamp is an expiration rather than a deadline, consider whether it makes more sense to include the expiration timestamp as a valid timestamp, as is done for deadlines.
+
+There are 3 instances of this issue:
+
+File: contracts/governance/twTAP.sol
+
+159:         if (participant.expiry < block.timestamp) {
+
+Open TODOs
+Code architecture, incentives, and error handling/reporting questions/issues should be resolved before deployment
+
+There are 10 instances of this issue:
+
+File: tap-token-audit/contracts/governance/twTAP.sol
+
+233:              //    (TODO: Word better?)
+
+Calls to _get() will revert when totalSupply() returns zero
+
+totalSupply() being zero will result in a division by zero, causing the transaction to fail. The function should instead special-case this scenario, and avoid reverting.
+
+There is one instance of this issue:
+
+File: contracts/oracle/implementations/SGOracle.sol
+
+/// @audit _get()
+50           uint256 lpPrice = (SG_POOL.totalLiquidity() *
+51:              uint256(UNDERLYING.latestAnswer())) / SG_POOL.totalSupply();
+
+latestAnswer() is deprecated
+Use latestRoundData() instead so that you can tell whether the answer is stale or not. The latestAnswer() function returns zero if it is unable to fetch data, which may be the case if ChainLink stops supporting this API. The API and its deprecation message no longer even appear on the ChainLink website, so it is dangerous to continue using it.
+
+
+latestRoundData() gives stale data
 
 
 
@@ -90,28 +85,119 @@ The instances below point to the second+ access of a value inside a mapping/arra
 
 
 
+SafeApprove deprecated. Use safeAllowance
 
-Save gas by checking against default WETH address
+approve status not checked 
 
-external call la address check pannama check and value aa immutable ls store panni 2100 gas save pannalam 
+1.Revert on Approval To Zero Address
 
-You can save a Gcoldsload (2100 gas) in the address provider, plus the 100 gas overhead of the external call, for every receive(), by creating an immutable DEFAULT_WETH variable which will store the initial WETH address, and change the require statement to be: require(msg.ender == DEFAULT_WETH || msg.sender == <etc>).
+Some tokens (e.g. OpenZeppelin) will revert if trying to approve the zero address to spend tokens (i.e. a call to approve(address(0), amt)).
 
-Avoid emitting state variables 
+Integrators may need to add special cases to handle this logic if working with such a token.
 
-Use assembly for loops to gas 
+2.Low Decimals
 
-If/Require checks should be top of the functions 
+Some tokens have low decimals (e.g. USDC has 6). Even more extreme, some tokens like Gemini USD only have 2 decimals.
 
-Is this possible to use constants instead of external call
+This may result in larger than expected precision loss.
 
-Cache loops inside the loops 
+Array length not checked 
 
-Cache the external calls inside the loops
+3.High Decimals
 
-Don't cache with local variables only used once 
+Some tokens have more than 18 decimals (e.g. YAM-V2 has 24).
 
-Is this possible to avoid extra write 
+This may trigger unexpected reverts due to overflow, posing a liveness risk to the contract.
+
+4.Non string metadata
+Some tokens (e.g. MKR) have metadata fields (name / symbol) encoded as bytes32 instead of the string prescribed by the ERC20 specification.
+
+This may cause issues when trying to consume metadata from these tokens.
+
+5.No Revert on Failure
+Some tokens do not revert on failure, but instead return false (e.g. ZRX, EURS).
+
+While this is technically compliant with the ERC20 standard, it goes against common solidity coding practices and may be overlooked by developers who forget to wrap their calls to transfer in a require.
+
+6. push 0 problems when version more than 0.8.19
+
+7. Divide by zero should be avoided 
+
+8. latest openzepelin version 
+
+9. All proxy contracts initialized in initialize function
+
+10. initializer could be front run 
+
+11) All hard coded values right ?
+
+12. add blocklist function for NFT 
+
+13) Is timeclock function implemented ?
+
+14) is there any swap function . Slippage protection, deadline, Hardcoded Slippage ?, 
+
+15. Can the 1st deposit raise a problem ?
+
+16) The contract implement a white/blacklist ? or some kind of addresses check ? is blocklist and whitelist tokens checked
+
+17) Solmate ERC20.sageTransferLib do not check the contract existence
+
+18) msg.value not checked can have result in unexpected behaviour
+
+19) Is the function refunds the extra amount paid ? when using msg.value 
+
+Was disableInitializers() called ?
+
+if any contract inheritance has a constructor (erc20, reentrancyGuard, Pausable…) is used : use the upgreadable version for initialize
+
+Signature Malleability : do not use escrevover() but use the openzepplin/ECDSA.sol (The last version should be used here)
+
+External calls in an un-bounded for-loop may result in a DOS
+
+Take care if (receiver == caller) can have unexpected behaviour
+
+Hash collisions are possible with abi.encodePacked (here)
+
+Is this possible the oracle returns state data. LatestAnswer() 
+
+divide by zero should be avoided 
+
+Use safetranfer function instead of transfer/trasferFrom
+
+status of  transfer/trasferFrom not checked
+
+There is possible that chainlink stale values 
+
+
+Avoid double casting
+Consider refactoring the following code, as double casting may introduce unexpected truncations and/or rounding issues.
+
+Furthermore, double type casting can make the code less readable and harder to maintain, increasing the likelihood of errors and misunderstandings during development and debugging.
+
+There are 3 instances of this issue.
+
+File: src/libraries/DelegateTokenStorageHelpers.sol
+
+// @audit uint256(uint160)
+39: 		        delegateTokenInfo[delegateTokenId][PACKED_INFO_POSITION] = (uint256(uint160(approved)) << 96) | expiry;
+
+// @audit uint256(uint160)
+47: 		        delegateTokenInfo[delegateTokenId][PACKED_INFO_POSITION] = (uint256(uint160(approved)) << 96) | expiry;
+
+
+Is there any possibility unchecked blocks underflow ?
+
+
+
+(, int256 totalETHXSupplyInInt, , , ) = AggregatorV3Interface(staderConfig.getETHXSupplyPORFeedProxy())
+	        .latestRoundData();
+
+latestRoundData() returns stale data. return values not checked 
+
+https://github.com/code-423n4/2022-06-stader-findings/issues/225
+
+
 
 
 
