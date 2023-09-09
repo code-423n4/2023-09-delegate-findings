@@ -80,9 +80,74 @@ https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b
 
 ##
 
-[G-] Multiple accesses of a mapping/array should use a local variable cache
+## [G-] State variable should be cached 
 
-The instances below point to the second+ access of a value inside a mapping/array, within a function. Caching a mapping’s value in a local storage or calldata variable when the value is accessed [multiple times](https://gist.github.com/IllIllI000/ec23a57daa30a8f8ca8b9681c8ccefb0), saves ~42 gas per access due to not having to recalculate the key’s keccak256 hash (Gkeccak256 - 30 gas) and that calculation’s associated stack operations. Caching an array’s struct avoids recalculating the array offsets into memory/calldata
+Caching of a state variable replaces each Gwarmaccess (100 gas) with a cheaper stack read. Other less obvious fixes/optimizations include having local memory caches of state variable structs, or having local caches of state variable contracts/addresses.
+
+### ``nonce.value``, ``receivers.targetTokenReceiver`` , ``receivers.fulfiller``  should be cached : Saves ``300 GAS``, ``3 SLOD``
+
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/CreateOffererLib.sol#L185
+
+```diff
+FILE: 2023-09-delegate/src/libraries/CreateOffererLib.sol
+
++ uint256 value_ = nonce.value ;
+- 185: if (nonce.value != contractNonce) revert CreateOffererErrors.InvalidContractNonce(nonce.value, contractNonce);
++ 185: if (value_ != contractNonce) revert CreateOffererErrors.InvalidContractNonce(value_, contractNonce);
+
+
+
++ address targetTokenReceiver_ = receivers.targetTokenReceiver ;
++ address fulfiller_ = receivers.fulfiller;
+289: //slither-disable-start timestamp
+300:        if (
+            keccak256(
+                abi.encode(
+                    IDelegateTokenStructs.DelegateInfo({
+                        tokenType: tokenType,
+-                         principalHolder: decodedContext.targetToken == CreateOffererEnums.TargetToken.principal 
+  ? receivers.targetTokenReceiver : receivers.fulfiller,
++                         principalHolder: decodedContext.targetToken == CreateOffererEnums.TargetToken.principal 
+  ? targetTokenReceiver_  : fulfiller_ ,
+-                        delegateHolder: decodedContext.targetToken == CreateOffererEnums.TargetToken.delegate ? receivers.targetTokenReceiver : receivers.fulfiller,
++                        delegateHolder: decodedContext.targetToken == CreateOffererEnums.TargetToken.delegate ? targetTokenReceiver_  : fulfiller_ ,
+                        expiry: CreateOffererHelpers.calculateExpiry(decodedContext.expiryType, decodedContext.expiryLength),
+                        rights: decodedContext.rights,
+                        tokenContract: consideration.token,
+                        tokenId: (tokenType != IDelegateRegistry.DelegationType.ERC20) ? consideration.identifier : 0,
+                        amount: (tokenType != IDelegateRegistry.DelegationType.ERC721) ? consideration.amount : 0
+                    })
+                )
+            ) != keccak256(abi.encode(IDelegateToken(delegateToken).getDelegateInfo(DelegateTokenHelpers.delegateIdNoRevert(address(this), identifier))))
+        ) revert CreateOffererErrors.DelegateInfoInvariant();
+
+```
+
+##
+// NEED TO CHECK THIS
+## [G-4] Avoid unwanted state variable write can save gas
+
+The ``burnPrincipal`` function first checks the value of the ``flag`` variable in the ``principalBurnAuthorization`` struct. If the value of the ``flag ``variable is ``BURN_NOT_AUTHORIZED``, then the function sets the value of the flag variable to ``BURN_AUTHORIZED``, burns the delegate token, and then sets the value of the flag variable back to ``BURN_NOT_AUTHORIZED``.
+
+However, the ``flag`` variable is only used to track whether or not the principal token has been authorized to be burned. The value of the ``flag`` variable is ``not actually`` used to ``control`` whether or not the principal token can be burned.
+
+Therefore, the unwanted variable write can be avoided by removing the second assignment to the ``flag`` variable
+
+### 
+
+
+```diff
+FILE: Breadcrumbs2023-09-delegate/src/libraries/DelegateTokenStorageHelpers.sol
+
+
+```
+##
+
+## [G-] If/Require checks should be top of the functions 
+
+Checks that involve constants should come before checks that involve state variables, function calls, and calculations. By doing these checks first, the function is able to revert before wasting a Gcoldsload (2100 gas) in a function that may ultimately revert in the unhappy case.
+
+
 
 
 
@@ -97,17 +162,14 @@ external call la address check pannama check and value aa immutable ls store pan
 
 You can save a Gcoldsload (2100 gas) in the address provider, plus the 100 gas overhead of the external call, for every receive(), by creating an immutable DEFAULT_WETH variable which will store the initial WETH address, and change the require statement to be: require(msg.ender == DEFAULT_WETH || msg.sender == <etc>).
 
-Avoid emitting state variables 
 
-Use assembly for loops to gas 
 
-If/Require checks should be top of the functions 
+
+
+
 
 Is this possible to use constants instead of external call
 
-Cache loops inside the loops 
-
-Cache the external calls inside the loops
 
 Don't cache with local variables only used once 
 
