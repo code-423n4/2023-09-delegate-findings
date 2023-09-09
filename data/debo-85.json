@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "debo",
+  "risk": "2",
+  "title": "[M-04] Integer Overflow in the CreateOfferer contract",
+  "issueId": 85,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/85"
+}
