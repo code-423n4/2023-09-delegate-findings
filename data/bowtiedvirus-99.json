@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "bowtiedvirus",
+  "risk": "2",
+  "title": "Unbounded loops over outgoingDelegationHashes and incomingDelegationHashes can cause DOS when called on-chain",
+  "issueId": 99,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/99"
+}
