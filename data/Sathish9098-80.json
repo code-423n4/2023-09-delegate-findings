@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Sathish9098",
+  "risk": "2",
+  "title": "Insecure use of low-level ``.call`` function could allow attacker to exploit error",
+  "issueId": 80,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/80"
+}
