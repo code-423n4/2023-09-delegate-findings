@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "836541",
+  "risk": "2",
+  "title": "checkDelegateForERC20/1155() can return the \"all rights\" tokens even if a subdelegation is created ",
+  "issueId": 164,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/164"
+}
