@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "niloy",
+  "risk": "2",
+  "title": "Insufficient Validation of Context Format in generateOrder",
+  "issueId": 158,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/158"
+}
