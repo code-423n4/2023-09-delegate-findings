@@ -1,6 +1,10 @@
 # GAS OPTIMIZATIONS
 
-Structs can be packed into fewer storage slots
+##
+
+## [G-1] Structs can be packed into fewer storage slots
+
+#### Saves ``6000 GAS`` , ``3 SLOT``
 
 Each slot saved can avoid an extra Gsset (20000 gas) for the first setting of the struct.
 
@@ -68,6 +72,8 @@ FILE: 2023-09-delegate/src/libraries/CreateOffererLib.sol
 
 ## [G-2] Remove or replace unused state variables
 
+#### Saves ``20000 GAS ``
+
 Saves a storage slot. If the variable is assigned a non-zero value, saves ``Gsset (20000 gas)``. If it's assigned a zero value, saves ``Gsreset (2900 gas)``. If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
 
 ```solidity
@@ -80,7 +86,9 @@ https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b
 
 ##
 
-## [G-] State variable should be cached 
+## [G-3] State variables should be cached 
+
+#### Saves ``300 GAS``, ``3 SLOD``
 
 Caching of a state variable replaces each Gwarmaccess (100 gas) with a cheaper stack read. Other less obvious fixes/optimizations include having local memory caches of state variable structs, or having local caches of state variable contracts/addresses.
 
@@ -120,32 +128,196 @@ FILE: 2023-09-delegate/src/libraries/CreateOffererLib.sol
                 )
             ) != keccak256(abi.encode(IDelegateToken(delegateToken).getDelegateInfo(DelegateTokenHelpers.delegateIdNoRevert(address(this), identifier))))
         ) revert CreateOffererErrors.DelegateInfoInvariant();
-
 ```
 
 ##
-// NEED TO CHECK THIS
-## [G-4] Avoid unwanted state variable write can save gas
 
-The ``burnPrincipal`` function first checks the value of the ``flag`` variable in the ``principalBurnAuthorization`` struct. If the value of the ``flag ``variable is ``BURN_NOT_AUTHORIZED``, then the function sets the value of the flag variable to ``BURN_AUTHORIZED``, burns the delegate token, and then sets the value of the flag variable back to ``BURN_NOT_AUTHORIZED``.
+## [G-4] Use assembly for loops to save gas
 
-However, the ``flag`` variable is only used to track whether or not the principal token has been authorized to be burned. The value of the ``flag`` variable is ``not actually`` used to ``control`` whether or not the principal token can be burned.
+#### Saves ``2450 GAS`` for every iteration from ``7 instances ``
 
-Therefore, the unwanted variable write can be avoided by removing the second assignment to the ``flag`` variable
+Assembly is more gas efficient for loops. Saves minimum ``350 GAS`` per iteration as per remix gas checks.
 
-### 
+```solidity
+FILE: Breadcrumbsdelegate-registry/src/DelegateRegistry.sol
 
+- 35: for (uint256 i = 0; i < data.length; ++i) {
+-                //slither-disable-next-line calls-loop,delegatecall-loop
+-                (success, results[i]) = address(this).delegatecall(data[i]);
+-                if (!success) revert MulticallFailed();
+-            }
+
++ assembly {
++    // Load the length of the data array
++    let dataSize := mload(data)
++
++    // Initialize the results array
++    let results := mload(0x40)
++    mstore(results, dataSize)
++
++    // Initialize a counter (i) to zero
++    let i := 0
++
++    for { } lt(i, dataSize) { } {
++        // Start loop
++
++        // Load the next calldata from the data array
++        let calldataPtr := add(add(data, 0x20), mul(i, 0x20))
++        let calldataSize := mload(calldataPtr)
++
++        // Perform delegatecall
++        let success := delegatecall(gas(), address(), add(calldataPtr, 0x04), calldataSize, 0, 0)
++
++        // Store the result and check for success
++        if iszero(success) {
++            // Revert if delegatecall fails
++            revert(0, 0)
++        }
++        mstore(add(results, mul(i, 0x20)), success)
++
++        // Increment the counter
++        i := add(i, 1)
++
++        // End loop
++    }
++
++    // results contains the success status of each delegatecall
++
++ }
+
+275:  for (uint256 i = 0; i < hashes.length; ++i) {
+
+312: for (uint256 i = 0; i < length; ++i) {
+                tempLocation = locations[i];
+                assembly {
+                    tempValue := sload(tempLocation)
+                }
+                contents[i] = tempValue;
+            }
+
+386: for (uint256 i = 0; i < hashesLength; ++i) {
+                hash = hashes[i];
+                if (_invalidFrom(_loadFrom(Hashes.location(hash)))) continue;
+                filteredHashes[count++] = hash;
+            }
+
+393:  for (uint256 i = 0; i < count; ++i) {
+                hash = filteredHashes[i];
+                location = Hashes.location(hash);
+                (address from, address to, address contract_) = _loadDelegationAddresses(location);
+                delegations_[i] = Delegation({
+                    type_: Hashes.decodeType(hash),
+                    to: to,
+                    from: from,
+                    rights: _loadDelegationBytes32(location, Storage.POSITIONS_RIGHTS),
+                    amount: _loadDelegationUint(location, Storage.POSITIONS_AMOUNT),
+                    contract_: contract_,
+                    tokenId: _loadDelegationUint(location, Storage.POSITIONS_TOKEN_ID)
+                });
+            }
+
+417: for (uint256 i = 0; i < hashesLength; ++i) {
+                hash = hashes[i];
+                if (_invalidFrom(_loadFrom(Hashes.location(hash)))) continue;
+                filteredHashes[count++] = hash;
+            }
+
+423: for (uint256 i = 0; i < count; ++i) {
+                validHashes[i] = filteredHashes[i];
+            }
+
+```
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L423-L425
+
+
+
+##
+
+## [G-5] Don't initialize default values to variables to reduce gas 
+
+Saves ``13 GAS`` for local variable and ``2000 GAS`` for state variable 
+
+```solidity
+FILE: Breadcrumbsdelegate-registry/src/DelegateRegistry.sol
+
+35: for (uint256 i = 0; i < data.length; ++i) {
+275: for (uint256 i = 0; i < hashes.length; ++i) {
+312: for (uint256 i = 0; i < length; ++i) {
+386: for (uint256 i = 0; i < hashesLength; ++i) {
+393: for (uint256 i = 0; i < count; ++i) {
+417: for (uint256 i = 0; i < hashesLength; ++i) {
+423: for (uint256 i = 0; i < count; ++i) {
+
+```
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L35
+
+##
+
+## [G-6] Use constants instead of type(uintX).max to avoid calculating every time 
+
+```solidity
+FILE: delegate-registry/src/DelegateRegistry.sol
+
+213:    ? type(uint256).max
+215: if (!Ops.or(rights == "", amount == type(uint256).max)) {
+217: ? type(uint256).max
+232: ? type(uint256).max
+234: if (!Ops.or(rights == "", amount == type(uint256).max)) {
+236: ? type(uint256).max
+372: uint256 cleanUpper12Bytes = type(uint256).max << 160;
+
+```
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L213
+
+##
+
+## [G-7] For same condition checks use modifiers 
+
+```solidity
+File: delegate-registry/src/DelegateRegistry.sol
+
+56: } else if (loadedFrom == msg.sender) {
+75: } else if (loadedFrom == msg.sender) {
+85: } else if (loadedFrom == msg.sender) {
+115:  } else if (loadedFrom == msg.sender) {
+118: } else if (loadedFrom == msg.sender) {
+140: } else if (loadedFrom == msg.sender) {
+143: } else if (loadedFrom == msg.sender) {
+
+```
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L75C9-L75C47
+
+##
+
+## [G-8] Declare the variables outside the loop
+
+Per iterations saves ``26 GAS``
 
 ```diff
-FILE: Breadcrumbs2023-09-delegate/src/libraries/DelegateTokenStorageHelpers.sol
+FILE: delegate-registry/src/DelegateRegistry.sol
 
++                 bytes32 location ;
++                 address from ;
+ for (uint256 i = 0; i < hashes.length; ++i) {
+-                 bytes32 location = Hashes.location(hashes[i]);
+-                 address from = _loadFrom(location);
++                location = Hashes.location(hashes[i]);
++                from = _loadFrom(location);
+                if (_invalidFrom(from)) {
+                    delegations_[i] = Delegation({type_: DelegationType.NONE, to: address(0), from: address(0), rights: "", amount: 0, contract_: address(0), tokenId: 0});
+                } else {
+                    (, address to, address contract_) = _loadDelegationAddresses(location);
+                    delegations_[i] = Delegation({
+                        type_: Hashes.decodeType(hashes[i]),
+                        to: to,
+                        from: from,
+                        rights: _loadDelegationBytes32(location, Storage.POSITIONS_RIGHTS),
+                        amount: _loadDelegationUint(location, Storage.POSITIONS_AMOUNT),
+                        contract_: contract_,
+                        tokenId: _loadDelegationUint(location, Storage.POSITIONS_TOKEN_ID)
+                    });
 
 ```
-##
-
-## [G-] If/Require checks should be top of the functions 
-
-Checks that involve constants should come before checks that involve state variables, function calls, and calculations. By doing these checks first, the function is able to revert before wasting a Gcoldsload (2100 gas) in a function that may ultimately revert in the unhappy case.
 
 
 
@@ -156,21 +328,5 @@ Checks that involve constants should come before checks that involve state varia
 
 
 
-Save gas by checking against default WETH address
-
-external call la address check pannama check and value aa immutable ls store panni 2100 gas save pannalam 
-
-You can save a Gcoldsload (2100 gas) in the address provider, plus the 100 gas overhead of the external call, for every receive(), by creating an immutable DEFAULT_WETH variable which will store the initial WETH address, and change the require statement to be: require(msg.ender == DEFAULT_WETH || msg.sender == <etc>).
 
 
-
-
-
-
-
-Is this possible to use constants instead of external call
-
-
-Don't cache with local variables only used once 
-
-Is this possible to avoid extra write 
