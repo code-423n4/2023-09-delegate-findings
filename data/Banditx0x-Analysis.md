@@ -18,6 +18,8 @@ For example, "delegate" is used in function and variable names to mean "the pers
 - Delegator: The person who delegates to somebody else
 - Delegatee: The person who recieves the delegation
 
+Another instance of naming was for example `BURN_NOT_AUTHORIZED` being used for access control. It was hard to understand the logic between the changing of this variable and what conditions burn was authorized. It turns out that it was a form of re-entrancy protection, but it was difficult to figure out.
+
 The codebase was extremely well written. The use of composition over inheritance diverged from the usual coding sytle of solidity contracts. This made it difficult to pattern match with previous codebases.
 
 - More code comments describing what functions intend to do
@@ -43,6 +45,8 @@ However, most of my time was spent trying to gain a thorough understanding of th
 - There wasn't much documentation or code comments
 - The codebase was hard to understand due to its complexity
 - Delegate is a unique codebase. I haven't seen the separation of ownership and delegation rights implemented via a smart contract before.
+
+
 
 
 
