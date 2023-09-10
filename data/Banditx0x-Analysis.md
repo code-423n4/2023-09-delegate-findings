@@ -8,9 +8,14 @@ The seperation of delegation rights from ownership of the token is extremely use
 
 ## Codebase Quality Analysis
 
-However here are some constructive feedback from an auditor's perspective on the codebase:
+However here are some constructive feedback from an auditor's perspective on the codebase could be improved:
 
-The function names can be confusing
+- **Function names which better represent what the code actually does**
+- **More code comments describing what functions intend to do**
+- **More seperation/spaces between lines within functions to denote different chunks of logic**
+- **Function names which better represent what the code actually does**
+
+In regards to function names being confusing:
 
 For example, "delegate" is used in function and variable names to mean "the person doing the delegating". However it is also used as the verb "the act of delegating". To add further confusion, there are other codebases which use "delegate" to mean the person being delegated to. For example, the Livepeer contest which took place just before used delegate to mean the opposite - the person that received the delegation. I propose a more differentiated naming convention:
 
@@ -21,10 +26,6 @@ For example, "delegate" is used in function and variable names to mean "the pers
 Another instance of naming was for example `BURN_NOT_AUTHORIZED` being used for access control. It was hard to understand the logic between the changing of this variable and what conditions burn was authorized. It turns out that it was a form of re-entrancy protection, but it was difficult to figure out.
 
 The codebase was extremely well written. The use of composition over inheritance diverged from the usual coding sytle of solidity contracts. This made it difficult to pattern match with previous codebases.
-
-- More code comments describing what functions intend to do
-- More seperation/spaces between lines within functions to denote different chunks of logic
-- Function names which better represent what the code actually does.
 
 ## Architecture
 
@@ -45,6 +46,8 @@ However, most of my time was spent trying to gain a thorough understanding of th
 - There wasn't much documentation or code comments
 - The codebase was hard to understand due to its complexity
 - Delegate is a unique codebase. I haven't seen the separation of ownership and delegation rights implemented via a smart contract before.
+
+
 
 
 
