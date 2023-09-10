@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "foxb868",
+  "risk": "2",
+  "title": "Unchecked Expiry Extension in `extend` Function.",
+  "issueId": 154,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/154"
+}
