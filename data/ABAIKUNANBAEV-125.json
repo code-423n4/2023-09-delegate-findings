@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "ABAIKUNANBAEV",
+  "risk": "2",
+  "title": "PT token owner can be front-runned by other users when calling rescind() after expiry is ended",
+  "issueId": 125,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/125"
+}
