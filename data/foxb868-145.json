@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "foxb868",
+  "risk": "3",
+  "title": "`onERC1155Received` function is missing checks to verify the source of the tokens and whether the sender is authorized to perform the transfer.",
+  "issueId": 145,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/145"
+}
