@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "foxb868",
+  "risk": "2",
+  "title": "Users and developers interacting with the contract may be confused by the presence of multiple tokens with identical `delegateTokenId` values.",
+  "issueId": 152,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/152"
+}
