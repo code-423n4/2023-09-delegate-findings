@@ -1,4 +1,25 @@
 ### Issue 1:
+The condition validation at L95 basically checks if erc721Order.info.targetToken is delegate or principal, a more simpler and readable approach is to simply check if it is not none of the two, this is more direct, readable and saves gas.
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L95
+```solidity
+        ---    if (!(erc721Order.info.targetToken == Enums.TargetToken.delegate || erc721Order.info.targetToken == Enums.TargetToken.none)) {
+        +++    if (erc721Order.info.targetToken == Enums.TargetToken.none) {
+                revert Errors.TargetTokenInvalid(erc721Order.info.targetToken);
+            }
+```
+A track down of enum TargetToken below shows that there are 3 possibilities, so instead of checking for the opposite of the 2nd & 3rd possibilities, it is more direct to simply check for the 1st possibility (none).
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/CreateOffererLib.sol#L42-L46
+```solidity
+    enum TargetToken {
+        none,
+        principal,
+        delegate
+    }
+```
+Two Other instances of this can be found at [L117](https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L117) & [L143](https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L143) of the same contract
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L117
+https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L143
+### Issue 2:
 Quality of return data in L230-L235 of tokenURI(...) function in DelegateToken.sol contract would be affected due to Typographical Error in L47 of delegateTokenURI(...) function in MarketMetadata.sol contract, It should be "time period" not "timeperiod"
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/DelegateToken.sol#L230-L235
 ```solidity
