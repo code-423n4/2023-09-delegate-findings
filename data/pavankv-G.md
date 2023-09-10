@@ -24,6 +24,7 @@ do{
                 if (!success) revert MulticallFailed();
 ++i;}
 while(i < data.length);
+```
 
 Look into `//@audit changed here` comment in above loop
 
@@ -132,3 +133,4 @@ Look into `//@audit changed here` in above code snippet
 
 code snippet:-
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/CreateOffererLib.sol#L361C1-L366C13
+
