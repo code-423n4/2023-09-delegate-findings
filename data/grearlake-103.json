@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "grearlake",
+  "risk": "2",
+  "title": "No revert when all delegate condition not meet lead to spamming emit",
+  "issueId": 103,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/103"
+}
