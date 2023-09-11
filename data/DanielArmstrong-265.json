@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "DanielArmstrong",
+  "risk": "2",
+  "title": "Incorrect delegate token URI in MarketMetadata.sol.",
+  "issueId": 265,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/265"
+}
