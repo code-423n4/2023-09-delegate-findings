@@ -83,7 +83,7 @@ File : src/PrincipalToken.sol
 
 ## [NC-01] Some Contracts are not following proper solidity style guide layout
 
-/ Layout of Contract: According to solidity Docs
+// Layout of Contract: According to solidity Docs
 // version
 // imports
 // errors
