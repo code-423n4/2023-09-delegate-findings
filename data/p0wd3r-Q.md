@@ -53,3 +53,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/CreateOff
             revert CreateOffererErrors.MaximumSpentInvalid(maximumSpent[0]);
         }
 ```
+
+# `transferFrom` in CreateOfferer miss `onlySeaport` modifier
+
+`generateOrder` and `ratifyOrder` both have `onlySeaport` modifier, as one necessary step in seaport's stage, `transferFrom` miss `onlySeaport` modifier.
