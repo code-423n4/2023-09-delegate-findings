@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xb41a",
+  "risk": "2",
+  "title": " By using delete function value of that index is removed and replaced by \"0\" and array size remains same and this lead to erroneous business logic and cause improper results. [ FILE NAME : DelegateToken.sol ]",
+  "issueId": 239,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/239"
+}
