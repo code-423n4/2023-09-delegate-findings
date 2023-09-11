@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "DelegateRegistry.checkDelegateForERC20() and checkDelegateForERC1155() will return the maximum amount delegated even if there are multiple matching delegations with different amounts",
+  "issueId": 255,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/255"
+}
