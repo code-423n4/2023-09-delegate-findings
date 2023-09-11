@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "If the new owner tries to approve an operator right after receiving the NFT, it will fail since the approved address was reset to 0",
+  "issueId": 272,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/272"
+}
