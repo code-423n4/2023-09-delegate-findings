@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "sobieski",
+  "risk": "2",
+  "title": "Rebasing tokens may be stolen or stuck in the contract",
+  "issueId": 257,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/257"
+}
