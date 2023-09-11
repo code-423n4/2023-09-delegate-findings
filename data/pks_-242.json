@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "pks_",
+  "risk": "2",
+  "title": "CreateOffererLib#createOrderHash function can be front-run by attacker and cause user create order failed",
+  "issueId": 242,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/242"
+}
