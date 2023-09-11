@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "LinKenji",
+  "risk": "2",
+  "title": "Potential Overflow/Underflow and Consistency Issues in `delegateERC1155` Function.",
+  "issueId": 225,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/225"
+}
