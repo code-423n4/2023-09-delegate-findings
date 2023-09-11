@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "erebus",
+  "risk": "3",
+  "title": "Not cleaning scratch space/memory after delegatecalls leads to the caller to work with \"dirty\" memory",
+  "issueId": 320,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/320"
+}
