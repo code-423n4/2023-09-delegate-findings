@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "sivanesh_808",
+  "risk": "2",
+  "title": "Failure to Return Value from Low-Level Call",
+  "issueId": 299,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/299"
+}
