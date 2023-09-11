@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Aymen0909",
+  "risk": "3",
+  "title": "Wrong input hash given to `decodeType` function in `CreateOffererHelpers` library",
+  "issueId": 350,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/350"
+}
