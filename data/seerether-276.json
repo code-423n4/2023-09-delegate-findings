@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "Decrementing the balance before transferring could lead to incorrect state if the transfer fails. ",
+  "issueId": 276,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/276"
+}
