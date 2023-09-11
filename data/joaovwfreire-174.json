@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "joaovwfreire",
+  "risk": "2",
+  "title": "Lack of Comprehensive Sanity Checks in to Argument at the transferFrom Method in DelegateToken",
+  "issueId": 174,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/174"
+}
