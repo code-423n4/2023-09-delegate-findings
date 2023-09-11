@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "digitizeworx",
+  "risk": "3",
+  "title": "There is no check to ensure that only the owner or an authorized user can extend the expiry.",
+  "issueId": 196,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/196"
+}
