@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "836541",
+  "risk": "2",
+  "title": "`ERC721.transferFrom` unchecked return can allow attackers to get Delegate Tokens without depositing NFT",
+  "issueId": 165,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/165"
+}
