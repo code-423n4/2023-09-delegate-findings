@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Baki",
+  "risk": "2",
+  "title": "Principal Token owner can be griefed during extend()",
+  "issueId": 278,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/278"
+}
