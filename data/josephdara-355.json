@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "josephdara",
+  "risk": "2",
+  "title": "use SafeMint instead of mint in PrincipalToken.sol",
+  "issueId": 355,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/355"
+}
