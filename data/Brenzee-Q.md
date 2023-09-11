@@ -32,3 +32,16 @@ Since `delegateERC20`, `delegateERC721`, and `delegateERC1155` are called by the
 
 ### Recommendation
 If both of those functions are to be used in any future deployments, make sure you acknowledge the risks that those functions may run out of gas.
+
+## [L-03] Rebasing tokens will not work with `DelegateToken` contract.
+
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L296-L322
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L353-L386
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L389-L410
+
+`DelegateToken` allows to deposit of any ERC20 tokens. In this current implementation, rebasing tokens will not work with the current system:
+- When a user creates a delegation, the specific amount is set.
+- After a while when a user withdraws the assets, it will either not send enough tokens or will try to send too many tokens.
+
+### Recommendations
+Be aware of rebasing tokens - users may lose the tokens or not receive enough tokens.
