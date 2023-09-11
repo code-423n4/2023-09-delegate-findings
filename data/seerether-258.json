@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "The payable modifier on the multicall function does allow it to receive and hold ether, which can be locked in the contract forever",
+  "issueId": 258,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/258"
+}
