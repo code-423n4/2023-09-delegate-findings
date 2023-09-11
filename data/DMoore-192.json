@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "DMoore",
+  "risk": "2",
+  "title": "FeeOnTransfer ERC20 Token Breaks DelegateToken.withdraw",
+  "issueId": 192,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/192"
+}
