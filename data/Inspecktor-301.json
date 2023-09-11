@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "Inspecktor",
+  "risk": "3",
+  "title": "User funds may be blocked if tokens with a transfer fee are used as the underlyingToken",
+  "issueId": 301,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/301"
+}
