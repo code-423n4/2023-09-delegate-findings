@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "The DelegateToken contract is vulnerable to draining assets via repeated flashloans of the same assets",
+  "issueId": 270,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/270"
+}
