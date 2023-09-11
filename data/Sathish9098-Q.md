@@ -1,12 +1,8 @@
-##
-
-## [L-1] open ``TODO ``
-
-https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L152
+# LOW FINDINGS
 
 ##
 
-## [L-2] Hardcoded ``interfaceId`` values may cause problem in future 
+## [L-1] Hardcoded ``interfaceId`` values may cause problem in future 
 
 Hardcoding the ``interfaceId`` in the ``supportsInterface`` function may cause problems in the future. This is because the ``interfaceId`` is an ``arbitrary number`` that can be changed at ``any time``. If the ``interfaceId ``changes, the ``supportsInterface`` function will no longer work correctly.
 
@@ -45,7 +41,7 @@ function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
 }
 
 ```
-## [L-3] Ensure that the setApprovalForAll function checks for the address(0) to prevent the possibility of the operator being set to address(0)
+## [L-2] Ensure that the setApprovalForAll function checks for the address(0) to prevent the possibility of the operator being set to address(0)
 
 The setApprovalForAll function does not check if the operator is address(0). This means that it is possible for the owner of the contract to approve address(0) to transfer all of their tokens on their behalf .However, there are also some risks associated with approving address(0) to transfer tokens on your behalf. For example, if you approve address(0) to transfer all of your tokens, then anyone could steal your tokens
 
@@ -68,7 +64,7 @@ require(operator != address(0));
 
 ```
 ##
-## [L-4] Array lengths not checked
+## [L-3] Array lengths not checked
 
 If the length of the arrays are not required to be of the same length, user operations may not be fully executed due to a mismatch in the number of items iterated over, versus the number of items provided in the second array.
 
@@ -97,7 +93,7 @@ require(minimumReceived.length == maximumSpent.length, " Length not matched" ).
 ````
 
 ##
-## [L-5] Signature use at deadlines should be allowed
+## [L-4] Signature use at deadlines should be allowed
 
 According to EIP-2612, signatures used on exactly the deadline timestamp are supposed to be allowed. While the signature may or may not be used for the exact EIP-2612 use case (transfer approvals), for consistency's sake, all deadlines should follow this semantic. If the timestamp is an expiration rather than a deadline, consider whether it makes more sense to include the expiration timestamp as a valid timestamp, as is done for deadlines.
 
@@ -119,7 +115,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e
 
 ##
 
-## [L-6] Latest solidity versions 0.8.21 is not compatible with all other chains 
+## [L-5] Latest solidity versions 0.8.21 is not compatible with all other chains 
 
 The latest Solidity version, 0.8.21, is not compatible with all other chains. Some chains, such as Ethereum Classic and Binance Smart Chain, are still using older versions of Solidity.
 
@@ -135,7 +131,7 @@ FILE: Breadcrumbsdelegate-registry/src/libraries/RegistryHashes.sol
 ```
 ##
 
-## [L-7] Return values of ``transferFrom()`` not checked
+## [L-6] Return values of ``transferFrom()`` not checked
 
 Not all IERC20 implementations revert() when there's a failure in transfer()/transferFrom(). The function signature has a boolean return value and they indicate errors that way instead. By not checking the return value, operations that should have marked as failed, may potentially go through without actually making a payment
 
@@ -159,7 +155,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/87dda32e96e5249e51bcd1b5dd53
 
 ##
 
-## [L-8] Avoid using vulnerable version ``openzeppelin-4.9.0``
+## [L-7] Avoid using vulnerable version ``openzeppelin-4.9.0``
 
 Known Vulnerabilities
 
@@ -172,6 +168,19 @@ https://github.com/OpenZeppelin/openzeppelin-contracts/blob/fd81a96f01cc42ef1c9a
 ### Recommended Mitigation
 Use ``openzeppelin-contracts version 4.9.3`` consistently for all contracts 
 
+##
+
+## [L-8] ``safeMint()`` should be used rather than ``mint()`` wherever possible 
+
+_mint() is [discouraged] in favor of _safeMint() which ensures that the recipient is either an EOA or implements IERC721Receiver. Both OpenZeppelin and solmate have versions of this function. In the cases below, ``_mint()`` does not call ``ERC721TokenReceiver.onERC721Received()`` on the recipient.
+
+```solidity
+FILE: 2023-09-delegate/src/libraries/DelegateTokenStorageHelpers.sol
+
+75:  PrincipalToken(principalToken).burn(msg.sender, delegateTokenId);
+
+```
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/DelegateTokenStorageHelpers.sol#L75
 
 
 
