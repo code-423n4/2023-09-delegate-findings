@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "moneyversed",
+  "risk": "3",
+  "title": "Predictable `delegateToken` identifier on `createAndValidateDelegateTokenId` derived from user-generated hash allows for viable malicious duplication",
+  "issueId": 182,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/182"
+}
