@@ -4,7 +4,7 @@ Delegate is a contract which stores a token and then gives out an NFT which repe
 
 Each creation of a delegation split involves entering an expiry date. After the expiry date is reached, the delegateToken is burned and the underlying token can be withdrawn from the vault by the principal token holder.
 
-The seperation of delegation rights from ownership of the token is extremely useful. Here are examples of why you may use it.
+There is an additional layer to the delegateToken v2 contract called "ContractOfferer" this is a layer which integrates Delegate with Seaport. The functions within this contract can only be called with a Seaport contract, This will act as a NFT marketplace which can be used with Delegate.
 
 ## Codebase Quality Analysis
 
@@ -46,6 +46,8 @@ However, most of my time was spent trying to gain a thorough understanding of th
 - There wasn't much documentation or code comments
 - The codebase was hard to understand due to its complexity
 - Delegate is a unique codebase. I haven't seen the separation of ownership and delegation rights implemented via a smart contract before.
+
+
 
 
 
