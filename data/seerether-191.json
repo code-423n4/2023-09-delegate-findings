@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "Calling delegateAll() twice with different 'enable' values can lead to unintended state changes. ",
+  "issueId": 191,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/191"
+}
