@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "Rights parameter in the delegateERC20 function does not seem to be properly checked when revoking delegations",
+  "issueId": 237,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/237"
+}
