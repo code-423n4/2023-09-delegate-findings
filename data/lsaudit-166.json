@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "lsaudit",
+  "risk": "3",
+  "title": "ERC20 rebased tokens will transfer incorrect value on `withdraw`",
+  "issueId": 166,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/166"
+}
