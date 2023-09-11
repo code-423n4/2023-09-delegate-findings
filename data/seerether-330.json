@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "The tokenType is concatenated rather than tightly integrated. An attacker could manipulate just the type byte of the hash. ",
+  "issueId": 330,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/330"
+}
