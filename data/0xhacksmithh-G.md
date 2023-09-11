@@ -10,7 +10,7 @@
     address public immutable delegateToken; 
     address public immutable marketMetadata;
 ```
-*Instances()*
+*Instances(5)*
 ```
 File:
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/DelegateToken.sol#L21
@@ -85,7 +85,7 @@ So technically `onlySeaport(msg.sender)` consume less gas than other, so if call
         returns (bytes4)
     {
 ```
-*Instances()*
+*Instances(2)*
 ```
 File: src/CreateOfferer.sol
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L55
@@ -96,7 +96,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/CreateOfferer.sol#L
 ```solidity
 string public delegateTokenBaseURI; 
 ```
-*Instances()*
+*Instances(1)*
 ```
 File:
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/MarketMetadata.sol#L14
@@ -106,7 +106,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/MarketMetadata.sol#
 ```solidity
 address rightsOwner = address(0); 
 ```
-*Instances()*
+*Instances(1)*
 ```
 File:
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/MarketMetadata.sol#L80
@@ -115,6 +115,10 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/MarketMetadata.sol#
 ### [Gas-06] Gas Can By using `modifier` instead of `internal` function in below case.
 According to current senario
 `mint()` which call `_checkDelegateTokenCaller()` internal function which verify that `msg.sender` is `delegateToken` or not.
+
+### With internal function `mint()` execution cost = 47942 gas
+### With modifier `mint()` execution cost = 688 gas
+* Here `IDelegateToken(delegateToken).mintAuthorizedCallback();` excluded while making above test *
 
 A huge gas can save if it(` _checkDelegateTokenCaller()`) convert to a modifier instaed
 ```solidity
@@ -144,7 +148,7 @@ A huge gas can save if it(` _checkDelegateTokenCaller()`) convert to a modifier 
         _mint(to, id);
     }
 ``` 
-*Instances()*
+*Instances(1)*
 ```
 File:
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/PrincipalToken.sol#L27-L30
@@ -165,7 +169,7 @@ https://github.com/code-423n4/2023-09-delegate/blob/main/src/PrincipalToken.sol#
 
 +   uint256 public flag; 
 ```
-*Instances()*
+*Instances(2)*
 ```
 File:
 https://github.com/code-423n4/2023-09-delegate/blob/main/src/libraries/CreateOffererLib.sol#L72-L74
