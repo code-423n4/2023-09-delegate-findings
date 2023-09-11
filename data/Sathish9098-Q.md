@@ -1,202 +1,225 @@
- tokenURI not implemented as per standard 
+##
 
+## [L-1] open ``TODO ``
 
-Retutn values of transfer and transferFrom functions should be checked
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L152
 
+##
 
-open TODO 
+## [L-2] Hardcoded ``interfaceId`` values may cause problem in future 
 
-Dividing an integer by another integer will often result in loss of precision. When the result is multiplied by another number, the loss of precision is magnified, often to material magnitudes. (X / Z) * Y should be re-written as (X * Y) / Z
+Hardcoding the ``interfaceId`` in the ``supportsInterface`` function may cause problems in the future. This is because the ``interfaceId`` is an ``arbitrary number`` that can be changed at ``any time``. If the ``interfaceId ``changes, the ``supportsInterface`` function will no longer work correctly.
 
-There are 8 instances of this issue:
+```solidity
+FILE: 2023-09-delegate/src/DelegateToken.sol
 
-File: contracts/markets/Market.sol
+function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+        return interfaceId == 0x2a55205a // ERC165 Interface ID for ERC2981
+            || interfaceId == 0x01ffc9a7 // ERC165 Interface ID for ERC165
+            || interfaceId == 0x80ac58cd // ERC165 Interface ID for ERC721
+            || interfaceId == 0x5b5e139f // ERC165 Interface ID for ERC721Metadata
+            || interfaceId == 0x4e2312e0; // ERC165 Interface ID for ERC1155 Token receiver
+    }
 
-290          uint256 denominator = ((10 ** ratesPrecision) -
-291              (collateralizationRate *
-292                  ((10 ** ratesPrecision) + liquidationMultiplier)) /
-293:             (10 ** ratesPrecision)) * (10 ** (18 - ratesPrecision));
+```
 
-392                  (userCollateralShare[user] *
-393                      (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
-394:                     collateralizationRate),
+```solidity
+FILE: delegate-registry/src/DelegateRegistry.sol
 
-392                  (userCollateralShare[user] *
-393:                     (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
+330: return Ops.or(interfaceId == type(IDelegateRegistry).interfaceId, interfaceId == 0x01ffc9a7);
 
-417                  collateralShare *
-418                      (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
-419:                     collateralizationRate,
+```
+https://github.com/delegatexyz/delegate-registry/blob/6d1254de793ccc40134f9bec0b7cb3d9c3632bc1/src/DelegateRegistry.sol#L330
 
-417                  collateralShare *
-418:                     (EXCHANGE_RATE_PRECISION / FEE_PRECISION) *
+### Recommended Mitigation
+You can use a dynamic approach to get the interfaceId. One way to do this is to use the IERC165 interface. The IERC165 interface defines a function called supportsInterface that returns true if the contract supports the specified interface
 
-External calls in an un-bounded for-loop may result in a DOS
+```solidity
 
-Missing checks for address(0x0) when assigning values to address state variables
+function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+  // Get the interfaceId of the contract that we are calling.
+  bytes4 contractInterfaceId = IERC165(msg.sender).supportsInterface(interfaceId);
 
-Draft imports may break in new minor versions
+  // Return true if the contract supports the specified interface.
+  return contractInterfaceId == interfaceId;
+}
 
-5:    import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+```
+## [L-3] Ensure that the setApprovalForAll function checks for the address(0) to prevent the possibility of the operator being set to address(0)
 
-Consider implementing two-step procedure for updating protocol addresses
+The setApprovalForAll function does not check if the operator is address(0). This means that it is possible for the owner of the contract to approve address(0) to transfer all of their tokens on their behalf .However, there are also some risks associated with approving address(0) to transfer tokens on your behalf. For example, if you approve address(0) to transfer all of your tokens, then anyone could steal your tokens
 
-Array lengths not checked
-If the length of the arrays are not required to be of the same length, user operations may not be fully executed due to a mismatch in the number of items iterated over, versus the number of items provided in the second array
+```solidity
+FILE: 2023-09-delegate/src/DelegateToken.sol
 
-Signature use at deadlines should be allowed
+function setApprovalForAll(address operator, bool approved) external {
+        accountOperator[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+
+```
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L144-L147
+
+### Recommended Mitigation
+Add address(0) check
+
+```
+require(operator != address(0));
+
+```
+##
+## [L-4] Array lengths not checked
+
+If the length of the arrays are not required to be of the same length, user operations may not be fully executed due to a mismatch in the number of items iterated over, versus the number of items provided in the second array.
+
+```solidity
+FILE: 2023-09-delegate/src/CreateOfferer.sol
+
+function previewOrder(address caller, address, SpentItem[] calldata minimumReceived, SpentItem[] calldata maximumSpent, bytes calldata context)
+        external
+        view
+        onlySeaport(caller)
+        returns (SpentItem[] memory offer, ReceivedItem[] memory consideration)
+    {
+        if (context.length != 160) revert Errors.InvalidContextLength();
+        (offer, consideration) = Helpers.processSpentItems(minimumReceived, maximumSpent);
+    }
+
+```
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/CreateOfferer.sol#L176-L184
+
+### Recommended Mitigation
+Add length check
+
+```solidity
+require(minimumReceived.length == maximumSpent.length, " Length not matched" ).
+
+````
+
+##
+## [L-5] Signature use at deadlines should be allowed
+
 According to EIP-2612, signatures used on exactly the deadline timestamp are supposed to be allowed. While the signature may or may not be used for the exact EIP-2612 use case (transfer approvals), for consistency's sake, all deadlines should follow this semantic. If the timestamp is an expiration rather than a deadline, consider whether it makes more sense to include the expiration timestamp as a valid timestamp, as is done for deadlines.
 
-There are 3 instances of this issue:
+```solidity
+FILE: Breadcrumbs2023-09-delegate/src/DelegateToken.sol
 
-File: contracts/governance/twTAP.sol
+341: if (StorageHelpers.readExpiry(delegateTokenInfo, delegateTokenId) < block.timestamp) {
 
-159:         if (participant.expiry < block.timestamp) {
+```
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/DelegateToken.sol#L341
 
-Open TODOs
-Code architecture, incentives, and error handling/reporting questions/issues should be resolved before deployment
+```solidity
+FILE: 2023-09-delegate/src/libraries/DelegateTokenStorageHelpers.sol
 
-There are 10 instances of this issue:
+162: if (block.timestamp < readExpiry(delegateTokenInfo, delegateTokenId)) {
 
-File: tap-token-audit/contracts/governance/twTAP.sol
+```
+https://github.com/code-423n4/2023-09-delegate/blob/a6dbac8068760ee4fc5bababb57e3fe79e5eeb2e/src/libraries/DelegateTokenStorageHelpers.sol#L162
 
-233:              //    (TODO: Word better?)
+##
 
-Calls to _get() will revert when totalSupply() returns zero
+## [L-6] Latest solidity versions 0.8.21 is not compatible with all other chains 
 
-totalSupply() being zero will result in a division by zero, causing the transaction to fail. The function should instead special-case this scenario, and avoid reverting.
+The latest Solidity version, 0.8.21, is not compatible with all other chains. Some chains, such as Ethereum Classic and Binance Smart Chain, are still using older versions of Solidity.
 
-There is one instance of this issue:
+```solidity
+FILE: delegate-registry/src/DelegateRegistry.sol
 
-File: contracts/oracle/implementations/SGOracle.sol
+2: pragma solidity ^0.8.21;
 
-/// @audit _get()
-50           uint256 lpPrice = (SG_POOL.totalLiquidity() *
-51:              uint256(UNDERLYING.latestAnswer())) / SG_POOL.totalSupply();
+FILE: Breadcrumbsdelegate-registry/src/libraries/RegistryHashes.sol
 
-latestAnswer() is deprecated
-Use latestRoundData() instead so that you can tell whether the answer is stale or not. The latestAnswer() function returns zero if it is unable to fetch data, which may be the case if ChainLink stops supporting this API. The API and its deprecation message no longer even appear on the ChainLink website, so it is dangerous to continue using it.
+2: pragma solidity ^0.8.21;
 
+```
+##
 
-latestRoundData() gives stale data
+## [L-7] Return values of ``transferFrom()`` not checked
 
+Not all IERC20 implementations revert() when there's a failure in transfer()/transferFrom(). The function signature has a boolean return value and they indicate errors that way instead. By not checking the return value, operations that should have marked as failed, may potentially go through without actually making a payment
 
+```solidity
+FILE: File: src/DelegateToken.sol
 
+369: IERC721(underlyingContract).transferFrom(address(this), msg.sender, erc721UnderlyingTokenId);
 
+393: IERC721(info.tokenContract).transferFrom(address(this), info.receiver, info.tokenId);
 
+```
+https://github.com/code-423n4/2023-09-delegate/blob/87dda32e96e5249e51bcd1b5dd53361d7c794694/src/DelegateToken.sol#L369
 
+```solidity
+FILE: File: src/libraries/DelegateTokenTransferHelpers.sol
 
-SafeApprove deprecated. Use safeAllowance
+41: IERC721(underlyingContract).transferFrom(msg.sender, address(this), underlyingTokenId);
 
-approve status not checked 
+```
+https://github.com/code-423n4/2023-09-delegate/blob/87dda32e96e5249e51bcd1b5dd53361d7c794694/src/libraries/DelegateTokenTransferHelpers.sol#L41
 
-1.Revert on Approval To Zero Address
+##
 
-Some tokens (e.g. OpenZeppelin) will revert if trying to approve the zero address to spend tokens (i.e. a call to approve(address(0), amt)).
+## [L-8] Avoid using vulnerable version ``openzeppelin-4.9.0``
 
-Integrators may need to add special cases to handle this logic if working with such a token.
+Known Vulnerabilities
 
-2.Low Decimals
+- Improper Encoding or Escaping of Output
+- Improper Input Validation
+- Missing Authorization
 
-Some tokens have low decimals (e.g. USDC has 6). Even more extreme, some tokens like Gemini USD only have 2 decimals.
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/fd81a96f01cc42ef1c9a5399364968d0e07e9e90/contracts/token/ERC721/ERC721.sol#L2
 
-This may result in larger than expected precision loss.
+### Recommended Mitigation
+Use ``openzeppelin-contracts version 4.9.3`` consistently for all contracts 
 
-Array length not checked 
 
-3.High Decimals
 
-Some tokens have more than 18 decimals (e.g. YAM-V2 has 24).
 
-This may trigger unexpected reverts due to overflow, posing a liveness risk to the contract.
 
-4.Non string metadata
-Some tokens (e.g. MKR) have metadata fields (name / symbol) encoded as bytes32 instead of the string prescribed by the ERC20 specification.
 
-This may cause issues when trying to consume metadata from these tokens.
 
-5.No Revert on Failure
-Some tokens do not revert on failure, but instead return false (e.g. ZRX, EURS).
 
-While this is technically compliant with the ERC20 standard, it goes against common solidity coding practices and may be overlooked by developers who forget to wrap their calls to transfer in a require.
 
-6. push 0 problems when version more than 0.8.19
 
-7. Divide by zero should be avoided 
 
-8. latest openzepelin version 
 
-9. All proxy contracts initialized in initialize function
 
-10. initializer could be front run 
 
-11) All hard coded values right ?
 
-12. add blocklist function for NFT 
 
-13) Is timeclock function implemented ?
 
-14) is there any swap function . Slippage protection, deadline, Hardcoded Slippage ?, 
 
-15. Can the 1st deposit raise a problem ?
 
-16) The contract implement a white/blacklist ? or some kind of addresses check ? is blocklist and whitelist tokens checked
 
-17) Solmate ERC20.sageTransferLib do not check the contract existence
 
-18) msg.value not checked can have result in unexpected behaviour
 
-19) Is the function refunds the extra amount paid ? when using msg.value 
 
-Was disableInitializers() called ?
 
-if any contract inheritance has a constructor (erc20, reentrancyGuard, Pausable…) is used : use the upgreadable version for initialize
 
-Signature Malleability : do not use escrevover() but use the openzepplin/ECDSA.sol (The last version should be used here)
 
-External calls in an un-bounded for-loop may result in a DOS
 
-Take care if (receiver == caller) can have unexpected behaviour
 
-Hash collisions are possible with abi.encodePacked (here)
 
-Is this possible the oracle returns state data. LatestAnswer() 
 
-divide by zero should be avoided 
 
-Use safetranfer function instead of transfer/trasferFrom
 
-status of  transfer/trasferFrom not checked
 
-There is possible that chainlink stale values 
 
 
-Avoid double casting
-Consider refactoring the following code, as double casting may introduce unexpected truncations and/or rounding issues.
 
-Furthermore, double type casting can make the code less readable and harder to maintain, increasing the likelihood of errors and misunderstandings during development and debugging.
 
-There are 3 instances of this issue.
 
-File: src/libraries/DelegateTokenStorageHelpers.sol
 
-// @audit uint256(uint160)
-39: 		        delegateTokenInfo[delegateTokenId][PACKED_INFO_POSITION] = (uint256(uint160(approved)) << 96) | expiry;
 
-// @audit uint256(uint160)
-47: 		        delegateTokenInfo[delegateTokenId][PACKED_INFO_POSITION] = (uint256(uint160(approved)) << 96) | expiry;
 
 
-Is there any possibility unchecked blocks underflow ?
 
 
 
-(, int256 totalETHXSupplyInInt, , , ) = AggregatorV3Interface(staderConfig.getETHXSupplyPORFeedProxy())
-	        .latestRoundData();
 
-latestRoundData() returns stale data. return values not checked 
 
-https://github.com/code-423n4/2022-06-stader-findings/issues/225
+
+
 
 
 
