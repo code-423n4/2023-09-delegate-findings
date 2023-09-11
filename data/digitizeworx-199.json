@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "digitizeworx",
+  "risk": "3",
+  "title": "An attacker can deploy a malicious contract that consumes excessive gas during the `onERC721Received` callback. ",
+  "issueId": 199,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/199"
+}
