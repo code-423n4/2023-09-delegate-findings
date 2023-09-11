@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "seerether",
+  "risk": "3",
+  "title": "Malicious caller tcan o pass arrays with more than 1 element to exploit the contract",
+  "issueId": 348,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/348"
+}
