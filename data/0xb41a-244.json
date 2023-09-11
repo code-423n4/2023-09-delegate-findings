@@ -1,0 +1,8 @@
+{
+  "contest": 284,
+  "handle": "0xb41a",
+  "risk": "3",
+  "title": "DelegateCall used here in unsafe manner [ FILE NAME : DelegateRegistry.sol ]",
+  "issueId": 244,
+  "issueUrl": "https://github.com/code-423n4/2023-09-delegate-findings/issues/244"
+}
